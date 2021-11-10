@@ -158,12 +158,226 @@ namespace CRUD_IVA
 
                     MessageBox.Show(mensaje,titulo, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     producto = new Producto();
+                    Limpiar();
                 }
             }
  
 
         }
+        private void botonEliminar_Click(object sender, EventArgs e)
+        {
+            bool control = false;
+            try
+            {
 
+
+                producto.Id = id_prodElim;
+
+
+                control = gestion.eliminarProducto(producto);
+                Console.WriteLine("id " + id_prodElim, " id prod" + producto.Id);
+
+                if (!control)
+                {
+                    mensaje = "No se pudo Eliminar el producto: '" + nombreProdELim + "'.";
+                    MessageBox.Show(mensaje, "No existe el producto", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    mensaje = "Se elimino correctamente \n el producto: '" + nombreProdELim + "'.";
+                    MessageBox.Show(mensaje, "Eliminación exitosa ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                bandera = false;
+
+                producto = new Producto();
+                desbloquearEntradas(0);
+
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("No se pudo Eliminar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void botonCancelar_Click(object sender, EventArgs e)
+        {
+            desbloquearEntradas(0);
+        }
+        private void actualizarToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            dg.DataSource = gestion.DT;
+
+        }
+
+        private void botonModificar_Click(object sender, EventArgs e)
+        {
+            bool res_info, res_precio;
+            res_info = ValidarCampos();
+            if (res_info)
+            {
+                res_precio = CalcularIva();
+
+                if (res_precio)
+                {
+                    try
+                    {
+                        producto = new Producto();
+
+                        producto.Id = id_prodElim;
+                        producto.NombreProducto = txt_Nombre.Text.Trim();
+                        producto.CategoriaProducto = txt_Categoria.Text.Trim();
+                        producto.TipoIva = cmb_iva.SelectedItem.ToString().Trim();
+                        producto.PrecioBruto = precioIngresado;
+                        producto.PrecioFinal = precioFinal;
+
+                        if (gestion.modificarProducto(producto))
+                        {
+
+                            MessageBox.Show("Se modificó correctamente.", "Modificación", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            dg.DataSource = gestion.DT;
+                            producto = new Producto();
+                        }
+
+
+                        desbloquearEntradas(0);
+                    }
+                    catch (Exception)
+                    {
+
+                        MessageBox.Show("Ocurrio un error \nal intentar realizar la modificacion.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+
+
+                }
+            }
+
+
+        }
+        private void dg_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+            string itemIva;
+            string itemCategoria;
+            if (bandera)
+            {
+                try
+                {
+                    id_prodElim = int.Parse(dg.CurrentRow.Cells[0].Value.ToString());
+                    nombreProdELim = dg.CurrentRow.Cells[1].Value.ToString();
+                    txt_Nombre.Text = nombreProdELim;
+                    elim_PSinIva = Convert.ToDouble(dg.CurrentRow.Cells[4].Value);
+                    precioEliminar = Convert.ToDouble(dg.CurrentRow.Cells[5].Value);
+
+                    txt_PrecioFinal.Text = precioEliminar.ToString();
+                    txt_Precio.Text = elim_PSinIva.ToString();
+                    botonEliminar.Enabled = true;
+
+
+                    if (botonModificar.Visible)
+                    {
+                        itemCategoria = dg.CurrentRow.Cells[2].Value.ToString();
+                        txt_Categoria.Text = itemCategoria;
+                        itemIva = dg.CurrentRow.Cells[3].Value.ToString();
+                        botonEliminar.Enabled = false;
+                        botonModificar.Enabled = true;
+                        if (itemIva == "21%")
+                        {
+                            cmb_iva.SelectedIndex = 0;
+                        }
+                        else if (itemIva == "10.5%")
+                        {
+                            cmb_iva.SelectedIndex = 1;
+                        }
+                        else if (itemIva == "4%")
+                        {
+                            cmb_iva.SelectedIndex = 3;
+                        }
+                        else if (itemIva == "27%")
+                        {
+                            cmb_iva.SelectedIndex = 2;
+                        }
+                        else
+                        {
+                            cmb_iva.SelectedIndex = -1;
+                        }
+
+                        desbloquearEntradas(1);
+
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex + "Error por celda null");
+                }
+
+            }
+
+        }
+        private void BotonLimpiar_Click(object sender, EventArgs e)
+        {
+            Limpiar();
+        }
+
+        private void eliminarUnProductoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            if (gestion.DT.Rows.Count == 0)
+            {
+                mensaje = "No hay registros guardados.";
+                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                bandera = true;
+                bloquearEntradas(1);
+            }
+
+
+
+        }
+        private void modificarUnProductoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gestion.DT.Rows.Count == 0)
+            {
+                mensaje = "No hay registros a modificar.";
+                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                bandera = true;
+                bloquearEntradas(2);
+            }
+
+        }
+        private void vaciarTablaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (gestion.DT.Rows.Count == 0)
+            {
+                mensaje = "No hay registros a eliminar.";
+                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                DialogResult respuesta;
+                respuesta = MessageBox.Show("Desea eliminar todos los registros", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                if (respuesta == DialogResult.Yes)
+                {
+                    try
+                    {
+                        gestion.borrarTodo();
+
+                        Limpiar();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Problemas vaciando la tabla" + ex);
+                    }
+                }
+            }
+
+        }
         public void Limpiar()
         {
             txt_Nombre.Text = "";
@@ -181,10 +395,7 @@ namespace CRUD_IVA
         }
 
 
-        private void BotonLimpiar_Click(object sender, EventArgs e)
-        {
-            Limpiar();
-        }
+        
 
 
         private void cmb_iva_SelectionChangeCommitted(object sender, EventArgs e)
@@ -200,24 +411,7 @@ namespace CRUD_IVA
             }
 
         }
-
-        private void eliminarUnProductoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            if (gestion.DT.Rows.Count == 0)
-            {
-                mensaje = "No hay registros guardados.";
-                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                bandera = true;
-                bloquearEntradas(1);
-            }
-            
-            
-
-        }
+    
 
         public void desbloquearEntradas(int arg)
         {
@@ -282,7 +476,6 @@ namespace CRUD_IVA
             {
                 case 1:             // para eliminar
                     label_subtitulo.Text = "Producto a eliminar";
-                    //labelEliminar.Visible = true;
                     cmb_iva.Enabled = false;
                     cmb_Categoria.Enabled = false;
                     BotonLimpiar.Enabled = false;
@@ -292,7 +485,6 @@ namespace CRUD_IVA
                     break;
                 case 2:         // para modificar
                     label_subtitulo.Text = "Producto a Modificar";
-                    //labelEliminar.Visible = false;
                     cmb_iva.Enabled = true;
                     cmb_Categoria.Enabled = true;
                     BotonLimpiar.Enabled = true;
@@ -303,204 +495,8 @@ namespace CRUD_IVA
             } 
 
         }
-
-        private void botonEliminar_Click(object sender, EventArgs e)
-        {
-            bool control = false;
-            try
-            {
-
-
-                producto.Id = id_prodElim;
-
-
-                control = gestion.eliminarProducto(producto);
-                Console.WriteLine("id " + id_prodElim, " id prod"+ producto.Id  );
-
-                if (!control)
-                {
-                    mensaje = "No se pudo Eliminar el producto: '" + nombreProdELim + "'.";
-                    MessageBox.Show(mensaje, "No existe el producto", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    mensaje = "Se elimino correctamente \n el producto: '" + nombreProdELim + "'.";
-                    MessageBox.Show(mensaje, "Eliminación exitosa ", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                bandera = false;
-
-                producto = new Producto();
-                desbloquearEntradas(0);
-
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("No se pudo Eliminar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void botonCancelar_Click(object sender, EventArgs e)
-        {
-            desbloquearEntradas(0);
-        }
-
-        private void modificarUnProductoToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (gestion.DT.Rows.Count == 0)
-            {
-                mensaje = "No hay registros a modificar.";
-                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                bandera = true;
-                bloquearEntradas(2);
-            }
-                
-        }
-
-        private void botonModificar_Click(object sender, EventArgs e)
-        {
-            bool res_info, res_precio;
-            res_info = ValidarCampos();
-            if (res_info)
-            {
-                res_precio = CalcularIva();
-
-                if (res_precio)
-                {
-                    try
-                    {
-                        producto = new Producto();
-
-                        producto.Id = id_prodElim;
-                        producto.NombreProducto = txt_Nombre.Text.Trim();
-                        producto.CategoriaProducto = txt_Categoria.Text.Trim();
-                        producto.TipoIva = cmb_iva.SelectedItem.ToString().Trim();
-                        producto.PrecioBruto = precioIngresado;
-                        producto.PrecioFinal = precioFinal;
-
-                        if (gestion.modificarProducto(producto))
-                        {
-
-                            MessageBox.Show("Se modificó correctamente.", "Modificación", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            dg.DataSource = gestion.DT;
-                            producto = new Producto();
-                        }
-                        
-
-                        desbloquearEntradas(0);
-                    }
-                    catch (Exception)
-                    {
-
-                        MessageBox.Show("Ocurrio un error \nal intentar realizar la modificacion.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    
-                    
-                }
-            }
-
-
-        }
-
-        private void actualizarToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            dg.DataSource = gestion.DT;
-
-        }
-
-        private void vaciarTablaToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (gestion.DT.Rows.Count == 0)
-            {
-                mensaje = "No hay registros a eliminar.";
-                MessageBox.Show(mensaje, "Memoria vacía", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                DialogResult respuesta;
-                respuesta = MessageBox.Show("Desea eliminar todos los registros", "Advertencia", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-                if (respuesta == DialogResult.Yes)
-                {
-                    try
-                    {
-                        gestion.borrarTodo();
-
-                        Limpiar();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Problemas vaciando la tabla" + ex);
-                    }
-                }
-            }
-                 
-        }
-
-
-        private void dg_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-                
-            string itemIva;
-            string itemCategoria;
-            if (bandera)
-            {
-                try
-                {
-                    id_prodElim = int.Parse( dg.CurrentRow.Cells[0].Value.ToString());
-                    nombreProdELim = dg.CurrentRow.Cells[1].Value.ToString();
-                    txt_Nombre.Text = nombreProdELim;
-                    elim_PSinIva = Convert.ToDouble(dg.CurrentRow.Cells[4].Value);
-                    precioEliminar = Convert.ToDouble(dg.CurrentRow.Cells[5].Value);
-                    
-                    txt_PrecioFinal.Text = precioEliminar.ToString();
-                    txt_Precio.Text = elim_PSinIva.ToString();
-                    botonEliminar.Enabled = true;
-
-
-                    if (botonModificar.Visible)
-                    {
-                        itemCategoria = dg.CurrentRow.Cells[2].Value.ToString();
-                        txt_Categoria.Text = itemCategoria;
-                        itemIva = dg.CurrentRow.Cells[3].Value.ToString();
-                        botonEliminar.Enabled = false;
-                        botonModificar.Enabled = true;
-                        if (itemIva == "21%")
-                        {
-                            cmb_iva.SelectedIndex = 0;
-                        }
-                        else if (itemIva == "10.5%")
-                        {
-                            cmb_iva.SelectedIndex = 1;
-                        }
-                        else if (itemIva == "4%")
-                        {
-                            cmb_iva.SelectedIndex = 3;
-                        }
-                        else if (itemIva == "27%")
-                        {
-                            cmb_iva.SelectedIndex = 2;
-                        }
-                        else
-                        {
-                            cmb_iva.SelectedIndex = -1;
-                        }
-
-                        desbloquearEntradas(1);
-
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine( ex + "Error por celda null");
-                }
-
-            }
-
-        }
+   
+  
 
         private void txt_Nombre_MouseClick(object sender, MouseEventArgs e)
         {
