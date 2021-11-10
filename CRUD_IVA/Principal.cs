@@ -454,6 +454,7 @@ namespace CRUD_IVA
             }
 
         }
+
         public void bloquearEntradas(int opciones)
         {
             Limpiar();
