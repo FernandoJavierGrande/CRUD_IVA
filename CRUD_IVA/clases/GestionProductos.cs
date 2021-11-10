@@ -126,6 +126,7 @@ namespace CRUD_IVA.clases
         { 
             DT.Clear();
             DT.WriteXml("Productos.xml");
+            UltimoId = 0;
             
         }
         

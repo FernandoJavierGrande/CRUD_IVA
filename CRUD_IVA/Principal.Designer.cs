@@ -62,7 +62,6 @@ namespace CRUD_IVA
             this.label_subtitulo = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.progBar_memoria = new System.Windows.Forms.ProgressBar();
             this.label_pocoEspacio = new System.Windows.Forms.Label();
             this.dg = new System.Windows.Forms.DataGridView();
             this.menuStrip1.SuspendLayout();
@@ -77,7 +76,7 @@ namespace CRUD_IVA
             this.opcionesToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1329, 30);
+            this.menuStrip1.Size = new System.Drawing.Size(1329, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -393,17 +392,6 @@ namespace CRUD_IVA
             this.label13.TabIndex = 29;
             this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // progBar_memoria
-            // 
-            this.progBar_memoria.Location = new System.Drawing.Point(1018, 47);
-            this.progBar_memoria.MarqueeAnimationSpeed = 150;
-            this.progBar_memoria.Maximum = 10;
-            this.progBar_memoria.Name = "progBar_memoria";
-            this.progBar_memoria.Size = new System.Drawing.Size(170, 20);
-            this.progBar_memoria.Step = 1;
-            this.progBar_memoria.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progBar_memoria.TabIndex = 30;
-            // 
             // label_pocoEspacio
             // 
             this.label_pocoEspacio.AutoSize = true;
@@ -432,7 +420,6 @@ namespace CRUD_IVA
             this.ClientSize = new System.Drawing.Size(1329, 638);
             this.Controls.Add(this.dg);
             this.Controls.Add(this.label_pocoEspacio);
-            this.Controls.Add(this.progBar_memoria);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label_subtitulo);
@@ -508,7 +495,6 @@ namespace CRUD_IVA
         private System.Windows.Forms.Label label_subtitulo;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.ProgressBar progBar_memoria;
         private System.Windows.Forms.Label label_pocoEspacio;
         private System.Windows.Forms.DataGridView dg;
     }

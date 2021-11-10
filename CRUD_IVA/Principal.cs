@@ -16,7 +16,7 @@ namespace CRUD_IVA
     {
         double precioIngresado, precioFinal, iva = 1.0, precioEliminar, elim_PSinIva;
         string mensaje, titulo;
-        int espacios = 5, id_prodElim;
+        int  id_prodElim;
         string nombreProdELim;
         bool bandera = false;
 
@@ -36,7 +36,6 @@ namespace CRUD_IVA
             cmb_Categoria.DropDownStyle = ComboBoxStyle.DropDownList;
             dg.AllowUserToAddRows = false;
 
-            progBar_memoria.Maximum = espacios;
 
             dg.DataSource = gestion.DT;
             dg.ReadOnly = true;
